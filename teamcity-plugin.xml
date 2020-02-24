@@ -6,7 +6,7 @@
     <version>@Version@</version>
     <description>Integration with slack</description>
     <download-url>@VendorURL@</download-url>
-    <email>metalalisa@gmail.com</email>
+    <email>annai@wix.com</email>
     <vendor>
       <name>@VendorName@</name>
       <url>@VendorURL@</url>

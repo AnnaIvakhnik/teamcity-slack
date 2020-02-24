@@ -13,15 +13,12 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable.ArrayBuffer
 
 class MessageBuilder(build: SBuild, context: MessageBuilderContext) {
+
   import Helpers.Implicits._
 
   def compile(template: String, setting: Option[BuildSetting] = None): SlackAttachment = {
-    def status = if (build.getDuration == 0) {
-      if (build.getBuildStatus.isSuccessful)
-        statusStarted
-      else
-        statusCanceled
-    }
+    def status = if (build.getDuration == 0 && build.getBuildStatus.isSuccessful) statusStarted
+    else if (Option(build.getBuildStatus).map(_.getText).getOrElse("").contains("UNKNOWN")) statusCanceled
     else if (build.getBuildStatus.isSuccessful) statusSucceeded
     else statusFailed
 
@@ -65,26 +62,27 @@ class MessageBuilder(build: SBuild, context: MessageBuilderContext) {
       "Reason: " + (if (build.getFailureReasons.isEmpty) unknownReason else build.getFailureReasons.asScala.map(_.getDescription).mkString("\n"))
     }
 
-    val text = """\{([\s\w._%]+)\}""".r.replaceAllIn(template, m ⇒ m.group(1) match {
-      case "name" ⇒ encodeText(build.getFullName)
-      case "number" ⇒ build.getBuildNumber
-      case "branch" ⇒ Option(build.getBranch).map(_.getDisplayName).getOrElse(unknownBranch)
-      case "status" ⇒ status
-      case "changes" ⇒ encodeText(changes)
-      case "allArtifactsDownloadUrl" ⇒ artifacts
-      case "artifactsRelUrl" ⇒ artifactsRelUrl
-      case "artifactLinks" ⇒ artifactLinks
-      case "link" ⇒ context.getViewResultsUrl(build)
-      case "mentions" ⇒ mentions
-      case "users" ⇒ users
-      case "reason" ⇒ encodeText(reason)
-      case x if x.startsWith("%") && x.endsWith("%") ⇒
-        context.getBuildParameter(build, x.substring(1, x.length - 1).trim) match {
-        case Some(value) ⇒ encodeText(value)
-        case _ ⇒ unknownParameter
-      }
-      case _ ⇒ m.group(0)
-    })
+    val text =
+      """\{([\s\w._%]+)\}""".r.replaceAllIn(template, m ⇒ m.group(1) match {
+        case "name" ⇒ encodeText(build.getFullName)
+        case "number" ⇒ build.getBuildNumber
+        case "branch" ⇒ Option(build.getBranch).map(_.getDisplayName).getOrElse(unknownBranch)
+        case "status" ⇒ status
+        case "changes" ⇒ encodeText(changes)
+        case "allArtifactsDownloadUrl" ⇒ artifacts
+        case "artifactsRelUrl" ⇒ artifactsRelUrl
+        case "artifactLinks" ⇒ artifactLinks
+        case "link" ⇒ context.getViewResultsUrl(build)
+        case "mentions" ⇒ mentions
+        case "users" ⇒ users
+        case "reason" ⇒ encodeText(reason)
+        case x if x.startsWith("%") && x.endsWith("%") ⇒
+          context.getBuildParameter(build, x.substring(1, x.length - 1).trim) match {
+            case Some(value) ⇒ encodeText(value)
+            case _ ⇒ unknownParameter
+          }
+        case _ ⇒ m.group(0)
+      })
 
     SlackAttachment(text.trim, statusColor(build.getBuildStatus), statusEmoji(build.getBuildStatus))
   }

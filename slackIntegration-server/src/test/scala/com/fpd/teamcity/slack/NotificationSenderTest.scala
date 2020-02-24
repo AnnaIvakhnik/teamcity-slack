@@ -12,6 +12,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import scala.collection.JavaConverters._
 
 class NotificationSenderTest extends FlatSpec with MockFactory with Matchers {
+
   import NotificationSenderTest._
 
   "NotificationSender.prepareSettings" should "return setting if build success" in new Context {
@@ -40,6 +41,7 @@ class NotificationSenderTest extends FlatSpec with MockFactory with Matchers {
 
   "NotificationSender.shouldSendPersonal" should "return true" in new Context {
     def settingFlags = Set(BuildSettingFlag.failure)
+
     manager.setConfig(manager.config.get.copy(personalEnabled = Some(true)))
     build.getBuildStatus _ when() returns Status.FAILURE
 
@@ -48,6 +50,7 @@ class NotificationSenderTest extends FlatSpec with MockFactory with Matchers {
 
   "NotificationSender.shouldSendPersonal" should "return false when personalEnabled is false" in new Context {
     def settingFlags = Set(BuildSettingFlag.failure)
+
     manager.setConfig(manager.config.get.copy(personalEnabled = Some(false)))
     build.getBuildStatus _ when() returns Status.FAILURE
 
@@ -56,6 +59,7 @@ class NotificationSenderTest extends FlatSpec with MockFactory with Matchers {
 
   "NotificationSender.shouldSendPersonal" should "return false when build is success" in new Context {
     def settingFlags = Set(BuildSettingFlag.failure)
+
     build.getBuildStatus _ when() returns Status.NORMAL
 
     sender.shouldSendPersonal(build) shouldEqual false
@@ -81,8 +85,13 @@ object NotificationSenderTest {
     val sender = new NotificationSenderStub(manager, gateway, messageBuilderFactory)
 
     def settingFlags: Set[BuildSettingFlag]
+
     val channelName = "general"
-    val setting = BuildSetting("buildTypeId", "my-branch", channelName, "", settingFlags)
+    val deepLookup = false
+    val notifyOnFailure = false
+    val notifyCommitter = false
+    val notifyOnRCOnly = false
+    val setting = BuildSetting("buildTypeId", "my-branch", channelName, "", settingFlags, "", deepLookup, notifyOnFailure, notifyOnRCOnly, notifyCommitter)
     val build: SBuild = stub[SBuild]
     val branch: Branch = stub[Branch]
 
@@ -93,4 +102,5 @@ object NotificationSenderTest {
     build.getBranch _ when() returns branch
     build.getContainingChanges _ when() returns List.empty[SVcsModification].asJava
   }
+
 }

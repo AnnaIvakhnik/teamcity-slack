@@ -48,8 +48,11 @@ object Helpers {
       def committeeEmails: Vector[String] =
         committees.map(user ⇒ Option(user.getEmail)).collect { case Some(x) if x.length > 0 ⇒ x }
 
-      def matchBranch(mask: String): Boolean =
+      def matchBranch(mask: String): Boolean = {
+        if (Option(build.getBranch).map(_.getDisplayName).getOrElse("").equals("<default>") && mask.equals("master")) true;
+        else
         mask.r.findFirstIn(Option(build.getBranch).map(_.getDisplayName).getOrElse("")).isDefined
+      }
     }
 
     implicit class RichBuildServer(val sBuildServer: SBuildServer) extends AnyVal {

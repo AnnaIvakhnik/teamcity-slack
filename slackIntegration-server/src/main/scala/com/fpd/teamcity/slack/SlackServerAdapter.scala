@@ -20,7 +20,8 @@ class SlackServerAdapter(sBuildServer: SBuildServer,
     val previousStatus = sBuildServer.findPreviousStatus(build)
 
     val flags = calculateFlags(previousStatus, build.getBuildStatus)
-    if (flags.nonEmpty) {
+    //val failedBuildFlag = configManager.buildSetting() && !build.getFailureReasons.stream().anyMatch(msg => msg.getDescription.contains("Process exited with code"))
+    if (flags.nonEmpty /*&& failedBuildFlag*/) {
       send(build, flags)
     }
   }

@@ -29,29 +29,32 @@ trait NotificationSender {
 
     val result = settings.foldLeft(Vector(): SendResult) { (acc, setting) ⇒
       val attachment = messageBuilder.compile(setting.messageTemplate, Some(setting))
-      val destinations = mutable.Set.empty[Destination]
-      if (build.isPersonal) {
-        // If build is personal we need inform only build's owner if needed
-        val email = build.getOwner.getEmail
-        if (sendPersonal && email.length > 0) {
-          destinations += SlackUser(email)
-        }
-      } else {
-        if (setting.slackChannel.nonEmpty) {
-          destinations += SlackChannel(setting.slackChannel)
-        }
-
-        /**
-          * if build fails all committees should receive the message
-          * if personal notification explicitly enabled in build settings let's notify all committees
-          */
-        if (setting.notifyCommitter || sendPersonal) {
-          emails.foreach { email ⇒
+      val destinations = mutable.Set.empty[Destination] 
+      val failedBuildFlag = build.getBuildStatus.isFailed && ( setting.notifyOnFailure && build.getFailureReasons.stream().anyMatch(msg => msg.getDescription.contains("Process exited with code")))
+      val notifyOnlyOnRC = setting.notifyOnRCOnly && build.getTriggeredBy.getAsString().contains("RC user")
+      if (!failedBuildFlag || !build.getBuildStatus.isFailed) {
+        if (build.isPersonal) {
+          // If build is personal we need inform only build's owner if needed
+          val email = build.getOwner.getEmail
+          if (sendPersonal && email.length > 0) {
             destinations += SlackUser(email)
+          }
+        } else {
+          if (setting.slackChannel.nonEmpty) {
+            destinations += SlackChannel(setting.slackChannel)
+          }
+
+          /**
+            * if build fails all committees should receive the message
+            * if personal notification explicitly enabled in build settings let's notify all committees
+            */
+          if (setting.notifyCommitter || sendPersonal) {
+            emails.foreach { email ⇒
+              destinations += SlackUser(email)
+            }
           }
         }
       }
-
       acc ++ destinations.toVector.map(x ⇒
         gateway.sendMessage(x, attachmentToSlackMessage(attachment, sendAsAttachment))
       )

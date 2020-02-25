@@ -38,10 +38,6 @@
       <label class="tableLabel" for="notifyOnFailure">Don't notify on exit code fail:</label>
       <input type="checkbox" name="notifyOnFailure" id="notifyOnFailure" value="1" <c:if test="${model.notifyOnFailure}">checked</c:if>/>
     </div>
-    <div class="group">
-      <label class="tableLabel" for="notifyOnRCOnly">Notify channel only on RC trigger:</label>
-      <input type="checkbox" name="notifyOnRCOnly" id="notifyOnRCOnly" value="1" <c:if test="${model.notifyOnRCOnly}">checked</c:if>/>
-    </div>
     <div class="checkboxes-group">
       <label class="flagLabel">
         <input type="checkbox" name="success" value="1" <c:if test="${model.success}">checked</c:if>/>

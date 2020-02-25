@@ -31,7 +31,7 @@ trait NotificationSender {
       val attachment = messageBuilder.compile(setting.messageTemplate, Some(setting))
       val destinations = mutable.Set.empty[Destination] 
       val failedBuildFlag = build.getBuildStatus.isFailed && ( setting.notifyOnFailure && build.getFailureReasons.stream().anyMatch(msg => msg.getDescription.contains("Process exited with code")))
-      val notifyOnlyOnRC = setting.notifyOnRCOnly && build.getTriggeredBy.getAsString().contains("RC user")
+      /*val notifyOnlyOnRC = setting.notifyOnRCOnly && build.getTriggeredBy.getAsString().contains("RC user")*/
       if (!failedBuildFlag || !build.getBuildStatus.isFailed) {
         if (build.isPersonal) {
           // If build is personal we need inform only build's owner if needed

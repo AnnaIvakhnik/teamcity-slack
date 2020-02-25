@@ -127,7 +127,6 @@ object ConfigManager {
                           artifactsMask: String = "",
                           deepLookup: Boolean = false,
                           notifyOnFailure: Boolean = false,
-                          notifyOnRCOnly: Boolean = false,
                           notifyCommitter: Boolean = false
                          ) {
     // Getters for JSP
@@ -137,7 +136,6 @@ object ConfigManager {
     lazy val getArtifactsMask: String = artifactsMask
     lazy val getDeepLookup: Boolean = deepLookup
     lazy val getNotifyOnFailure: Boolean = notifyOnFailure
-    lazy val getNotifyOnRCOnly: Boolean = notifyOnRCOnly
     lazy val getNotifyCommitter: Boolean = notifyCommitter
     // Flags
     lazy val getSuccess: Boolean = flags.contains(BuildSettingFlag.success)

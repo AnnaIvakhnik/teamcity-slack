@@ -53,8 +53,7 @@ class BuildSettingsSave(val configManager: ConfigManager,
       // store build setting
       def updateConfig() = configManager.updateBuildSetting(
         BuildSetting(buildId, branch, channel.getOrElse(""), message, flags, artifactsMask.getOrElse(""),
-          request.param("deepLookup").isDefined, request.param("notifyOnFailure").isDefined,
-          request.param("notifyOnRCOnly").isDefined, notifyCommitter),
+          request.param("deepLookup").isDefined, request.param("notifyOnFailure").isDefined, notifyCommitter),
         request.param("key")
       )
 

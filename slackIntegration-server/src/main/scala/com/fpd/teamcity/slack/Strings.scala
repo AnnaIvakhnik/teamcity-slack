@@ -4,8 +4,8 @@ import com.fpd.teamcity.slack.SlackGateway.Destination
 
 object Strings {
   lazy val logCategory = "Slack Integration"
-  def label: String = "Slack"
-  def tabId: String = "Slack"
+  def label: String = "Slack New"
+  def tabId: String = "Slack New"
   lazy val channelMessageOwner = "TeamCity"
 
   private def unableToCreateSessionByConfig(reason: String): String = s"Unable to create session by config: $reason"

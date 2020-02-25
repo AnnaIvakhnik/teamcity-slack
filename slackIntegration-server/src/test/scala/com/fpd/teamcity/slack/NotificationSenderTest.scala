@@ -90,8 +90,7 @@ object NotificationSenderTest {
     val deepLookup = false
     val notifyOnFailure = false
     val notifyCommitter = false
-    val notifyOnRCOnly = false
-    val setting = BuildSetting("buildTypeId", "my-branch", channelName, "", settingFlags, "", deepLookup, notifyOnFailure, notifyOnRCOnly, notifyCommitter)
+    val setting = BuildSetting("buildTypeId", "my-branch", channelName, "", settingFlags, "", deepLookup, notifyOnFailure/*, notifyOnRCOnly*/, notifyCommitter)
     val build: SBuild = stub[SBuild]
     val branch: Branch = stub[Branch]
 
